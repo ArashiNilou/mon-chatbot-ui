@@ -18,8 +18,9 @@ export default function Home() {
     // État pour la case à cocher "Recherche Web"
     const [useWebSearch, setUseWebSearch] = useState(false);
 
-    // Référence pour faire défiler automatiquement la conversation vers le bas
+    // Références pour le scroll et l'input
     const historyEndRef = useRef(null);
+    const inputRef = useRef(null);
 
     useEffect(() => {
         historyEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -62,6 +63,10 @@ export default function Home() {
             setHistory([...newHistory, { role: 'assistant', content: "Désolé, une erreur est survenue." }]);
         } finally {
             setIsThinking(false);
+            // Remettre le focus sur l'input après la réponse
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 100);
         }
     };
 
@@ -160,12 +165,14 @@ export default function Home() {
                 <div className={styles.footer}>
                     <form onSubmit={handleSubmit} className={styles.formContainer}>
                         <input
+                            ref={inputRef}
                             type="text"
                             value={currentPrompt}
                             onChange={(e) => setCurrentPrompt(e.target.value)}
                             placeholder="Tapez votre message..."
                             className={styles.inputField}
                             disabled={isThinking}
+                            autoFocus
                         />
                         <button type="submit" className={styles.micButton} disabled={isThinking}>
                             {isThinking ? '...' : '➤'}
