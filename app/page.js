@@ -18,6 +18,22 @@ export default function Home() {
     // État pour la case à cocher "Recherche Web"
     const [useWebSearch, setUseWebSearch] = useState(false);
 
+    // État pour le thème (dark/light)
+    const [isDarkMode, setIsDarkMode] = useState(true);
+
+    // Charger le thème depuis localStorage au montage
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('chatbot-theme');
+        if (savedTheme !== null) {
+            setIsDarkMode(savedTheme === 'dark');
+        }
+    }, []);
+
+    // Sauvegarder le thème dans localStorage quand il change
+    useEffect(() => {
+        localStorage.setItem('chatbot-theme', isDarkMode ? 'dark' : 'light');
+    }, [isDarkMode]);
+
     // Références pour le scroll et l'input
     const historyEndRef = useRef(null);
     const inputRef = useRef(null);
@@ -71,7 +87,7 @@ export default function Home() {
     };
 
     return (
-        <main className={styles.container}>
+        <main className={`${styles.container} ${isDarkMode ? styles.dark : styles.light}`}>
             {/* Boule interactive pour thinking state */}
             {isThinking && (
                 <div className={styles.thinkingOrb}>
@@ -88,8 +104,17 @@ export default function Home() {
             <div className={styles.mainContent}>
                 {/* Header avec titre */}
                 <div className={styles.header}>
-                    <h1>Test Ollama</h1>
-                    <p>Votre compagnon intelligent pour toutes vos questions</p>
+                    <div className={styles.headerContent}>
+                        <h1>Test Ollama</h1>
+                        <p>Votre compagnon intelligent pour toutes vos questions</p>
+                    </div>
+                    <button 
+                        className={styles.themeToggle}
+                        onClick={() => setIsDarkMode(!isDarkMode)}
+                        title={isDarkMode ? "Passer en mode clair" : "Passer en mode sombre"}
+                    >
+                        {isDarkMode ? '☀️' : '🌙'}
+                    </button>
                 </div>
                 
                 {/* Zone d'affichage de la conversation */}
