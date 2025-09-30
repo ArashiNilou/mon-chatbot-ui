@@ -649,7 +649,7 @@
 /* Boule interactive thinking */
 .thinkingOrb {
     position: fixed;
-    left: 2rem;
+    right: 2rem;
     top: 50%;
     transform: translateY(-50%);
     z-index: 100;
@@ -825,7 +825,7 @@
 /* Responsive */
 @media (max-width: 768px) {
     .thinkingOrb {
-        left: 1rem;
+        right: 1rem;
         transform: translateY(-50%) scale(0.8);
     }
     
@@ -878,7 +878,7 @@
 
 @media (max-width: 480px) {
     .thinkingOrb {
-        left: 0.5rem;
+        right: 0.5rem;
         top: 45%;
         transform: translateY(-50%) scale(0.6);
     }
