@@ -21,6 +21,13 @@ export default function Home() {
     // État pour le thème (dark/light)
     const [isDarkMode, setIsDarkMode] = useState(true);
 
+    // Fonction pour démarrer une nouvelle conversation
+    const startNewConversation = () => {
+        setHistory([]);
+        setCurrentPrompt('');
+        inputRef.current?.focus();
+    };
+
     // Charger le thème depuis localStorage au montage
     useEffect(() => {
         const savedTheme = localStorage.getItem('chatbot-theme');
@@ -108,13 +115,22 @@ export default function Home() {
                         <h1>Test Ollama</h1>
                         <p>Votre compagnon intelligent pour toutes vos questions</p>
                     </div>
-                    <button 
-                        className={styles.themeToggle}
-                        onClick={() => setIsDarkMode(!isDarkMode)}
-                        title={isDarkMode ? "Passer en mode clair" : "Passer en mode sombre"}
-                    >
-                        {isDarkMode ? '☀️' : '🌙'}
-                    </button>
+                    <div className={styles.headerButtons}>
+                        <button 
+                            className={styles.newChatButton}
+                            onClick={startNewConversation}
+                            title="Nouvelle conversation"
+                        >
+                            Nouveau
+                        </button>
+                        <button 
+                            className={styles.themeToggle}
+                            onClick={() => setIsDarkMode(!isDarkMode)}
+                            title={isDarkMode ? "Passer en mode clair" : "Passer en mode sombre"}
+                        >
+                            {isDarkMode ? '☀️' : '🌙'}
+                        </button>
+                    </div>
                 </div>
                 
                 {/* Zone d'affichage de la conversation */}
