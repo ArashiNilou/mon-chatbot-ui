@@ -305,13 +305,15 @@ export default function Home() {
             <div className={styles.mainContent}>
                 {/* Header avec titre */}
                 <div className={styles.header}>
-                    <button
-                        className={styles.menuButton}
-                        onClick={() => setSidebarOpen(!sidebarOpen)}
-                        title="Ouvrir les conversations"
-                    >
-                        ☰
-                    </button>
+                    <div className={styles.headerLeft}>
+                        <button
+                            className={styles.menuButton}
+                            onClick={() => setSidebarOpen(!sidebarOpen)}
+                            title="Ouvrir les conversations"
+                        >
+                            ☰
+                        </button>
+                    </div>
                     <div className={styles.headerContent}>
                         <h1>Test Ollama</h1>
                         <p>Votre compagnon intelligent pour toutes vos questions</p>

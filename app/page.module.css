@@ -210,8 +210,9 @@
 .header {
     grid-area: header;
     padding: 1.5rem 2rem;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
     align-items: center;
     background: var(--card-bg);
     backdrop-filter: blur(30px);
@@ -221,6 +222,12 @@
     position: relative;
     z-index: 10;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .headerContent {
