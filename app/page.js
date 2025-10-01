@@ -174,7 +174,8 @@ export default function Home() {
             updateConversationTitle(convId, currentPrompt);
         }
 
-        const newHistory = [...history, { role: 'user', content: currentPrompt }];
+        const userPrompt = currentPrompt; // Sauvegarder avant de réinitialiser
+        const newHistory = [...history, { role: 'user', content: userPrompt }];
         setHistory(newHistory);
         setCurrentPrompt('');
         setIsThinking(true);
@@ -186,7 +187,7 @@ export default function Home() {
             // Si des fichiers sont uploadés, on les envoie avec FormData
             if (uploadedFiles.length > 0) {
                 const formData = new FormData();
-                formData.append('prompt', currentPrompt);
+                formData.append('prompt', userPrompt);
                 formData.append('history', JSON.stringify(history));
                 formData.append('use_web_search', useWebSearch);
 
@@ -212,7 +213,7 @@ export default function Home() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        prompt: currentPrompt,
+                        prompt: userPrompt,
                         history: history,
                         use_web_search: useWebSearch,
                     }),
