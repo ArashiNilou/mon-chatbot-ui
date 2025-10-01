@@ -25,12 +25,14 @@ export default function Home() {
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const fileInputRef = useRef(null);
 
-    // Fonction pour démarrer une nouvelle conversation
+    // États pour la gestion des conversations
+    const [conversations, setConversations] = useState([]);
+    const [currentConversationId, setCurrentConversationId] = useState(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    // Fonction pour démarrer une nouvelle conversation (updated)
     const startNewConversation = () => {
-        setHistory([]);
-        setCurrentPrompt('');
-        setUploadedFiles([]);
-        inputRef.current?.focus();
+        createNewConversation();
     };
 
     // Fonction pour gérer l'upload de fichiers
@@ -53,11 +55,16 @@ export default function Home() {
         setUploadedFiles(prev => prev.filter((_, i) => i !== index));
     };
 
-    // Charger le thème depuis localStorage au montage
+    // Charger le thème et les conversations depuis localStorage au montage
     useEffect(() => {
         const savedTheme = localStorage.getItem('chatbot-theme');
         if (savedTheme !== null) {
             setIsDarkMode(savedTheme === 'dark');
+        }
+
+        const savedConversations = localStorage.getItem('chatbot-conversations');
+        if (savedConversations) {
+            setConversations(JSON.parse(savedConversations));
         }
     }, []);
 
@@ -65,6 +72,75 @@ export default function Home() {
     useEffect(() => {
         localStorage.setItem('chatbot-theme', isDarkMode ? 'dark' : 'light');
     }, [isDarkMode]);
+
+    // Sauvegarder les conversations dans localStorage quand elles changent
+    useEffect(() => {
+        if (conversations.length > 0) {
+            localStorage.setItem('chatbot-conversations', JSON.stringify(conversations));
+        }
+    }, [conversations]);
+
+    // Sauvegarder la conversation actuelle quand l'historique change
+    useEffect(() => {
+        if (currentConversationId && history.length > 0) {
+            const updatedConversations = conversations.map(conv =>
+                conv.id === currentConversationId
+                    ? { ...conv, history, updatedAt: new Date().toISOString() }
+                    : conv
+            );
+            setConversations(updatedConversations);
+        }
+    }, [history]);
+
+    // Créer une nouvelle conversation
+    const createNewConversation = () => {
+        const newConv = {
+            id: Date.now(),
+            title: 'Nouvelle conversation',
+            history: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        setConversations([newConv, ...conversations]);
+        setCurrentConversationId(newConv.id);
+        setHistory([]);
+        setCurrentPrompt('');
+        setUploadedFiles([]);
+        inputRef.current?.focus();
+    };
+
+    // Charger une conversation existante
+    const loadConversation = (id) => {
+        const conv = conversations.find(c => c.id === id);
+        if (conv) {
+            setCurrentConversationId(id);
+            setHistory(conv.history || []);
+            setCurrentPrompt('');
+            setUploadedFiles([]);
+            setSidebarOpen(false);
+        }
+    };
+
+    // Supprimer une conversation
+    const deleteConversation = (id) => {
+        const filtered = conversations.filter(c => c.id !== id);
+        setConversations(filtered);
+        if (currentConversationId === id) {
+            setCurrentConversationId(null);
+            setHistory([]);
+        }
+    };
+
+    // Mettre à jour le titre de la conversation basé sur le premier message
+    const updateConversationTitle = (convId, firstMessage) => {
+        const title = firstMessage.slice(0, 50) + (firstMessage.length > 50 ? '...' : '');
+        const updatedConversations = conversations.map(conv =>
+            conv.id === convId && conv.title === 'Nouvelle conversation'
+                ? { ...conv, title }
+                : conv
+        );
+        setConversations(updatedConversations);
+    };
 
     // Références pour le scroll et l'input
     const historyEndRef = useRef(null);
@@ -77,6 +153,26 @@ export default function Home() {
     const handleSubmit = async (event) => {
         event.preventDefault(); // Empêche le rechargement de la page
         if (!currentPrompt.trim() || isThinking) return; // Ne rien faire si le champ est vide ou si le bot réfléchit
+
+        // Créer une nouvelle conversation si aucune n'est active
+        let convId = currentConversationId;
+        if (!convId) {
+            const newConv = {
+                id: Date.now(),
+                title: 'Nouvelle conversation',
+                history: [],
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            setConversations(prev => [newConv, ...prev]);
+            setCurrentConversationId(newConv.id);
+            convId = newConv.id;
+        }
+
+        // Mettre à jour le titre avec le premier message
+        if (history.length === 0) {
+            updateConversationTitle(convId, currentPrompt);
+        }
 
         const newHistory = [...history, { role: 'user', content: currentPrompt }];
         setHistory(newHistory);
@@ -145,6 +241,55 @@ export default function Home() {
 
     return (
         <main className={`${styles.container} ${isDarkMode ? styles.dark : styles.light}`}>
+            {/* Sidebar pour les conversations */}
+            <div className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
+                <div className={styles.sidebarHeader}>
+                    <h2>Conversations</h2>
+                    <button
+                        className={styles.closeSidebarButton}
+                        onClick={() => setSidebarOpen(false)}
+                        title="Fermer"
+                    >
+                        ✕
+                    </button>
+                </div>
+                <button
+                    className={styles.newConversationButton}
+                    onClick={createNewConversation}
+                >
+                    + Nouvelle conversation
+                </button>
+                <div className={styles.conversationList}>
+                    {conversations.map(conv => (
+                        <div
+                            key={conv.id}
+                            className={`${styles.conversationItem} ${conv.id === currentConversationId ? styles.conversationActive : ''}`}
+                            onClick={() => loadConversation(conv.id)}
+                        >
+                            <div className={styles.conversationTitle}>{conv.title}</div>
+                            <button
+                                className={styles.deleteConversationButton}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteConversation(conv.id);
+                                }}
+                                title="Supprimer"
+                            >
+                                🗑️
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Overlay pour fermer la sidebar sur mobile */}
+            {sidebarOpen && (
+                <div
+                    className={styles.sidebarOverlay}
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+
             {/* Boule interactive pour thinking state */}
             {isThinking && (
                 <div className={styles.thinkingOrb}>
@@ -161,19 +306,26 @@ export default function Home() {
             <div className={styles.mainContent}>
                 {/* Header avec titre */}
                 <div className={styles.header}>
+                    <button
+                        className={styles.menuButton}
+                        onClick={() => setSidebarOpen(!sidebarOpen)}
+                        title="Ouvrir les conversations"
+                    >
+                        ☰
+                    </button>
                     <div className={styles.headerContent}>
                         <h1>Test Ollama</h1>
                         <p>Votre compagnon intelligent pour toutes vos questions</p>
                     </div>
                     <div className={styles.headerButtons}>
-                        <button 
+                        <button
                             className={styles.newChatButton}
                             onClick={startNewConversation}
                             title="Nouvelle conversation"
                         >
                             Nouveau
                         </button>
-                        <button 
+                        <button
                             className={styles.themeToggle}
                             onClick={() => setIsDarkMode(!isDarkMode)}
                             title={isDarkMode ? "Passer en mode clair" : "Passer en mode sombre"}
