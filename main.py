@@ -71,9 +71,10 @@ def process_image(file_content: bytes, filename: str) -> str:
         buffered = BytesIO()
         image.save(buffered, format=image.format or "PNG")
         img_str = base64.b64encode(buffered.getvalue()).decode()
-        return f"[Image: {filename}]\nBase64: {img_str[:100]}... (image encodée)"
+        return img_str  # Retourner directement le base64 complet
     except Exception as e:
-        return f"Erreur lors du traitement de l'image: {str(e)}"
+        print(f"Erreur lors du traitement de l'image {filename}: {str(e)}")
+        return None
 
 
 @app.get("/")
@@ -107,29 +108,39 @@ async def handle_chat_with_files(
     history_list = json.loads(history)
 
     # Traiter les fichiers
-    files_context = "\n\n=== FICHIERS UPLOADÉS ===\n"
+    files_context = ""
+    images_base64 = []
+
     for file in files:
         content = await file.read()
 
         if file.content_type == "application/pdf":
             text = extract_text_from_pdf(content)
-            files_context += f"\n📄 Fichier PDF: {file.filename}\nContenu:\n{text}\n"
+            files_context += f"\n\n📄 Fichier PDF: {file.filename}\nContenu:\n{text}\n"
 
         elif file.content_type in ["image/png", "image/jpeg", "image/jpg"]:
-            img_info = process_image(content, file.filename)
-            files_context += f"\n🖼️ {img_info}\n"
+            img_b64 = process_image(content, file.filename)
+            if img_b64:
+                images_base64.append(img_b64)
+                files_context += f"\n🖼️ Image uploadée: {file.filename}\n"
+            else:
+                files_context += f"\n❌ Erreur lors du traitement de l'image: {file.filename}\n"
 
         else:
             files_context += f"\n❓ Fichier non supporté: {file.filename}\n"
 
     # Enrichir le prompt avec le contexte des fichiers
-    enriched_prompt = f"{files_context}\n\n=== QUESTION DE L'UTILISATEUR ===\n{prompt}\n\nAnalyse les fichiers ci-dessus et réponds à la question."
+    if files_context:
+        enriched_prompt = f"{files_context}\n\n{prompt}"
+    else:
+        enriched_prompt = prompt
 
-    # Appeler la fonction chat avec le prompt enrichi
+    # Appeler la fonction chat avec le prompt enrichi et les images
     updated_history = chat(
         prompt=enriched_prompt,
         history=history_list,
         use_web_search=use_web_search,
+        images=images_base64 if images_base64 else None
     )
 
     last_response = updated_history[-1] if updated_history else {}

@@ -49,9 +49,10 @@ def format_search_results(search_response: dict) -> str:
 # --- FONCTION PRINCIPALE DE CHAT (le "cerveau") ---
 
 
-def chat(prompt: str, history: list, use_web_search: bool = False):
+def chat(prompt: str, history: list, use_web_search: bool = False, images: list = None):
     """
     Discute avec le LLM en utilisant un historique de conversation.
+    images: liste de strings base64 des images à analyser
     """
     try:
         llm_client = Client(
@@ -86,7 +87,13 @@ Question : "{prompt}"
 Note: Une recherche web a été tentée mais a échoué. Je vais répondre avec mes connaissances générales.
 """
 
-    messages = history + [{"role": "user", "content": final_prompt}]
+    # Préparer le message avec images si présentes
+    user_message = {"role": "user", "content": final_prompt}
+    if images:
+        print(f"📸 Ajout de {len(images)} image(s) au message")
+        user_message["images"] = images
+
+    messages = history + [user_message]
 
     try:
         print(
