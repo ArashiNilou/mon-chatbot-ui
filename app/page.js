@@ -101,7 +101,10 @@ export default function Home() {
         setHistory([]);
         setCurrentPrompt('');
         setUploadedFiles([]);
-        inputRef.current?.focus();
+        setSidebarOpen(false); // Fermer la sidebar automatiquement
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 100);
     };
 
     // Charger une conversation existante
