@@ -318,7 +318,7 @@ export default function Home() {
                         </button>
                     </div>
                     <div className={styles.headerContent}>
-                        <h1>Test Ollama</h1>
+                        <h1>Ollama</h1>
                         <p>Votre compagnon intelligent pour toutes vos questions</p>
                     </div>
                     <div className={styles.headerButtons}>
@@ -343,7 +343,6 @@ export default function Home() {
                                     <path d="M5 6L5.5 7.5L7 8L5.5 8.5L5 10L4.5 8.5L3 8L4.5 7.5L5 6Z" fill="currentColor"/>
                                 </svg>
                             </div>
-                            <h1 className={styles.welcomeTitle}>Test Ollama</h1>
                             <p className={styles.welcomeSubtitle}>Commencez une conversation ci-dessous</p>
                             <div className={styles.quickActions}>
                                 <button className={styles.quickAction} onClick={() => setCurrentPrompt('Explique-moi l\'intelligence artificielle')}>
