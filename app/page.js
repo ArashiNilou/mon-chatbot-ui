@@ -148,6 +148,22 @@ export default function Home() {
         historyEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [history]);
 
+    // Auto-resize du textarea
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.style.height = 'auto';
+            inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 200)}px`;
+        }
+    }, [currentPrompt]);
+
+    // Gérer les touches du clavier (Enter vs Shift+Enter)
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            handleSubmit(event);
+        }
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault(); // Empêche le rechargement de la page
         if (!currentPrompt.trim() || isThinking) return; // Ne rien faire si le champ est vide ou si le bot réfléchit
@@ -449,15 +465,16 @@ export default function Home() {
                         >
                             🌍
                         </button>
-                        <input
+                        <textarea
                             ref={inputRef}
-                            type="text"
                             value={currentPrompt}
                             onChange={(e) => setCurrentPrompt(e.target.value)}
-                            placeholder="Tapez votre message..."
+                            onKeyDown={handleKeyDown}
+                            placeholder="Tapez votre message... (Shift+Enter pour nouvelle ligne)"
                             className={styles.inputField}
                             disabled={isThinking}
                             autoFocus
+                            rows={1}
                         />
                         <button type="submit" className={styles.micButton} disabled={isThinking}>
                             {isThinking ? '...' : '➤'}
