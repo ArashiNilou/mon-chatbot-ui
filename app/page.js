@@ -229,8 +229,11 @@ export default function Home() {
 
         } catch (error) {
             console.error("Erreur lors de l'appel à l'API:", error);
-            // Afficher un message d'erreur à l'utilisateur
-            setHistory([...newHistory, { role: 'assistant', content: "Désolé, une erreur est survenue." }]);
+            // Afficher un message d'erreur détaillé à l'utilisateur
+            const errorMessage = error.message.includes('fetch') || error.message.includes('network')
+                ? "Impossible de contacter le serveur. Vérifiez que le backend est en cours d'exécution."
+                : `Désolé, une erreur est survenue: ${error.message}`;
+            setHistory([...newHistory, { role: 'assistant', content: errorMessage }]);
         } finally {
             setIsThinking(false);
             // Remettre le focus sur l'input après la réponse
@@ -319,13 +322,6 @@ export default function Home() {
                         <p>Votre compagnon intelligent pour toutes vos questions</p>
                     </div>
                     <div className={styles.headerButtons}>
-                        <button
-                            className={styles.newChatButton}
-                            onClick={startNewConversation}
-                            title="Nouvelle conversation"
-                        >
-                            Nouveau
-                        </button>
                         <button
                             className={styles.themeToggle}
                             onClick={() => setIsDarkMode(!isDarkMode)}
