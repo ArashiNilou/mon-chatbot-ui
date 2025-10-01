@@ -395,29 +395,29 @@
 
 .webSearchButton:hover:not(:disabled) {
     transform: translateY(-2px) scale(1.05);
-    border-color: #a78bfa;
-    box-shadow: 0 8px 25px rgba(167, 139, 250, 0.2), 0 0 30px rgba(196, 181, 253, 0.15);
-    background: rgba(167, 139, 250, 0.1);
+    border-color: #5eead4;
+    box-shadow: 0 8px 25px rgba(94, 234, 212, 0.2), 0 0 30px rgba(103, 232, 249, 0.15);
+    background: rgba(94, 234, 212, 0.1);
 }
 
 .webSearchButton.webSearchActive {
-    background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 50%, #ddd6fe 100%);
-    border-color: rgba(167, 139, 250, 0.4);
-    box-shadow: 0 4px 20px rgba(167, 139, 250, 0.3), 0 0 30px rgba(196, 181, 253, 0.2);
+    background: linear-gradient(135deg, #5eead4 0%, #7dd3fc 50%, #a5f3fc 100%);
+    border-color: rgba(94, 234, 212, 0.4);
+    box-shadow: 0 4px 20px rgba(94, 234, 212, 0.3), 0 0 30px rgba(125, 211, 252, 0.2);
     animation: webSearchPulse 2s ease-in-out infinite;
 }
 
 .webSearchButton.webSearchActive:hover:not(:disabled) {
-    background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c4b5fd 100%);
-    box-shadow: 0 8px 30px rgba(167, 139, 250, 0.4), 0 0 40px rgba(196, 181, 253, 0.3);
+    background: linear-gradient(135deg, #2dd4bf 0%, #5eead4 50%, #7dd3fc 100%);
+    box-shadow: 0 8px 30px rgba(94, 234, 212, 0.4), 0 0 40px rgba(125, 211, 252, 0.3);
 }
 
 @keyframes webSearchPulse {
     0%, 100% {
-        box-shadow: 0 4px 20px rgba(167, 139, 250, 0.3), 0 0 30px rgba(196, 181, 253, 0.2);
+        box-shadow: 0 4px 20px rgba(94, 234, 212, 0.3), 0 0 30px rgba(125, 211, 252, 0.2);
     }
     50% {
-        box-shadow: 0 4px 25px rgba(167, 139, 250, 0.4), 0 0 40px rgba(196, 181, 253, 0.3);
+        box-shadow: 0 4px 25px rgba(94, 234, 212, 0.4), 0 0 40px rgba(125, 211, 252, 0.3);
     }
 }
 
