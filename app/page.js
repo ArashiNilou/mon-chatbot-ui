@@ -30,11 +30,6 @@ export default function Home() {
     const [currentConversationId, setCurrentConversationId] = useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    // Fonction pour démarrer une nouvelle conversation (updated)
-    const startNewConversation = () => {
-        createNewConversation();
-    };
-
     // Fonction pour gérer l'upload de fichiers
     const handleFileUpload = (event) => {
         const files = Array.from(event.target.files);
