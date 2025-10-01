@@ -292,6 +292,15 @@ export default function Home() {
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
                         </button>
+                        <button
+                            type="button"
+                            onClick={() => setUseWebSearch(!useWebSearch)}
+                            className={`${styles.webSearchButton} ${useWebSearch ? styles.webSearchActive : ''}`}
+                            disabled={isThinking}
+                            title={useWebSearch ? "Recherche web activée" : "Activer la recherche web"}
+                        >
+                            🌍
+                        </button>
                         <input
                             ref={inputRef}
                             type="text"
@@ -306,15 +315,6 @@ export default function Home() {
                             {isThinking ? '...' : '➤'}
                         </button>
                     </form>
-                    <div className={styles.checkboxContainer}>
-                        <input
-                            type="checkbox"
-                            id="web_search"
-                            checked={useWebSearch}
-                            onChange={(e) => setUseWebSearch(e.target.checked)}
-                        />
-                        <label htmlFor="web_search">Utiliser la recherche web</label>
-                    </div>
                 </div>
             </div>
         </main>
