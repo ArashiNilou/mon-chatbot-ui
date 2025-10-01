@@ -353,6 +353,113 @@
     background: #94a3b8;
 }
 
+/* Bouton d'upload de fichiers */
+.uploadButton {
+    background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 50%, var(--accent-purple) 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.75rem;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px var(--blue-glow), 0 0 20px var(--cyan-glow);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.uploadButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0891b2 0%, #2563eb 50%, #7c3aed 100%);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px var(--blue-glow), 0 0 30px var(--cyan-glow), 0 0 40px rgba(139, 92, 246, 0.1);
+}
+
+.uploadButton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.uploadButton:hover::before {
+    left: 100%;
+}
+
+.uploadButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.uploadButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    background: #94a3b8;
+}
+
+/* Conteneur des fichiers uploadés */
+.uploadedFilesContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    max-width: 600px;
+}
+
+.uploadedFile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.uploadedFile:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--accent-blue);
+}
+
+.fileName {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.removeFileButton {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    width: 18px;
+    height: 18px;
+}
+
+.removeFileButton:hover {
+    color: #ef4444;
+    transform: scale(1.2);
+}
+
 .checkboxContainer {
     display: flex;
     align-items: center;

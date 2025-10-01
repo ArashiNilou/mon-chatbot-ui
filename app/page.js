@@ -21,11 +21,36 @@ export default function Home() {
     // État pour le thème (dark/light)
     const [isDarkMode, setIsDarkMode] = useState(true);
 
+    // État pour les fichiers uploadés
+    const [uploadedFiles, setUploadedFiles] = useState([]);
+    const fileInputRef = useRef(null);
+
     // Fonction pour démarrer une nouvelle conversation
     const startNewConversation = () => {
         setHistory([]);
         setCurrentPrompt('');
+        setUploadedFiles([]);
         inputRef.current?.focus();
+    };
+
+    // Fonction pour gérer l'upload de fichiers
+    const handleFileUpload = (event) => {
+        const files = Array.from(event.target.files);
+        const validFiles = files.filter(file => {
+            const validTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+            return validTypes.includes(file.type);
+        });
+        setUploadedFiles(prev => [...prev, ...validFiles]);
+    };
+
+    // Fonction pour ouvrir le sélecteur de fichiers
+    const openFilePicker = () => {
+        fileInputRef.current?.click();
+    };
+
+    // Fonction pour supprimer un fichier uploadé
+    const removeFile = (index) => {
+        setUploadedFiles(prev => prev.filter((_, i) => i !== index));
     };
 
     // Charger le thème depuis localStorage au montage
@@ -62,23 +87,48 @@ export default function Home() {
             // URL de votre backend (doit être définie dans vos variables d'environnement)
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
-            const response = await fetch(`${apiUrl}/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    prompt: currentPrompt,
-                    history: history, // On envoie l'historique précédent
-                    use_web_search: useWebSearch,
-                }),
-            });
+            // Si des fichiers sont uploadés, on les envoie avec FormData
+            if (uploadedFiles.length > 0) {
+                const formData = new FormData();
+                formData.append('prompt', currentPrompt);
+                formData.append('history', JSON.stringify(history));
+                formData.append('use_web_search', useWebSearch);
 
-            if (!response.ok) {
-                throw new Error('La réponse du réseau était invalide');
+                uploadedFiles.forEach((file, index) => {
+                    formData.append('files', file);
+                });
+
+                const response = await fetch(`${apiUrl}/chat-with-files`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('La réponse du réseau était invalide');
+                }
+
+                const data = await response.json();
+                setHistory([...newHistory, data.response]);
+                setUploadedFiles([]); // Réinitialiser les fichiers après envoi
+            } else {
+                // Sans fichiers, on utilise l'endpoint classique
+                const response = await fetch(`${apiUrl}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: currentPrompt,
+                        history: history,
+                        use_web_search: useWebSearch,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('La réponse du réseau était invalide');
+                }
+
+                const data = await response.json();
+                setHistory([...newHistory, data.response]);
             }
-
-            const data = await response.json();
-            // Ajoute la réponse de l'assistant à l'historique
-            setHistory([...newHistory, data.response]);
 
         } catch (error) {
             console.error("Erreur lors de l'appel à l'API:", error);
@@ -204,7 +254,44 @@ export default function Home() {
 
                 {/* Formulaire de saisie en bas */}
                 <div className={styles.footer}>
+                    {/* Afficher les fichiers uploadés */}
+                    {uploadedFiles.length > 0 && (
+                        <div className={styles.uploadedFilesContainer}>
+                            {uploadedFiles.map((file, index) => (
+                                <div key={index} className={styles.uploadedFile}>
+                                    <span className={styles.fileName}>{file.name}</span>
+                                    <button
+                                        onClick={() => removeFile(index)}
+                                        className={styles.removeFileButton}
+                                        type="button"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                     <form onSubmit={handleSubmit} className={styles.formContainer}>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            accept=".pdf,.png,.jpg,.jpeg"
+                            onChange={handleFileUpload}
+                            style={{ display: 'none' }}
+                        />
+                        <button
+                            type="button"
+                            onClick={openFilePicker}
+                            className={styles.uploadButton}
+                            disabled={isThinking}
+                            title="Ajouter un fichier (PDF, PNG, JPEG)"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </button>
                         <input
                             ref={inputRef}
                             type="text"
