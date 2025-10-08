@@ -1226,6 +1226,11 @@
 @media (max-width: 768px) {
     .container {
         --sidebar-width: 100%;
+        --spacing-xs: 0.25rem;
+        --spacing-sm: 0.5rem;
+        --spacing-md: 0.75rem;
+        --spacing-lg: 1rem;
+        --spacing-xl: 1.25rem;
     }
 
     .sidebar {
@@ -1233,45 +1238,85 @@
     }
 
     .thinkingOrb {
-        transform: translate(-50%, -50%) scale(0.7);
+        transform: translate(-50%, -50%) scale(0.5);
     }
 
     .orbCore {
-        width: clamp(280px, 80vw, 350px);
-        height: clamp(280px, 80vw, 350px);
+        width: clamp(200px, 60vw, 280px);
+        height: clamp(200px, 60vw, 280px);
     }
 
     .header {
-        grid-template-columns: auto 1fr;
-        padding: var(--spacing-md);
+        grid-template-columns: auto 1fr auto;
+        grid-template-rows: auto;
+        padding: var(--spacing-sm) var(--spacing-md);
+        border-radius: 0;
+        margin: 0;
     }
 
-    .headerButtons {
-        position: absolute;
-        top: var(--spacing-md);
-        right: var(--spacing-md);
+    .headerLeft {
+        order: 1;
     }
 
     .headerContent {
-        grid-column: 1 / -1;
-        margin-top: var(--spacing-xl);
+        order: 2;
+        margin-top: 0;
+    }
+
+    .headerButtons {
+        order: 3;
+        position: relative;
+        top: auto;
+        right: auto;
+    }
+
+    .header h1 {
+        font-size: clamp(1rem, 4vw, 1.25rem);
+        margin: 0;
+    }
+
+    .header p {
+        display: none; /* Masquer le sous-titre sur mobile */
+    }
+
+    .historyContainer {
+        padding: var(--spacing-md);
+    }
+
+    .footer {
+        padding: var(--spacing-sm) var(--spacing-md);
+        border-radius: 0;
+        margin: 0;
     }
 
     .quickActions {
         grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+
+    .quickAction {
+        padding: var(--spacing-sm) var(--spacing-md);
+        min-height: 50px;
     }
 
     .inputField {
         font-size: 16px; /* Évite le zoom sur iOS */
+        padding: var(--spacing-sm) var(--spacing-md);
     }
 
     .formContainer {
         max-width: 100%;
-        gap: var(--spacing-sm);
+        gap: var(--spacing-xs);
+        margin-bottom: var(--spacing-xs);
     }
 
     .mainContent {
-        padding: 0 var(--spacing-xs);
+        padding: 0;
+        max-width: 100%;
+    }
+
+    .welcomeScreen {
+        padding: var(--spacing-md);
     }
 }
 
