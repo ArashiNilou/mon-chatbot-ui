@@ -470,7 +470,7 @@ export default function Home() {
                             value={currentPrompt}
                             onChange={(e) => setCurrentPrompt(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder="Tapez votre message... (Shift+Enter pour nouvelle ligne)"
+                            placeholder="Tapez votre message..."
                             className={styles.inputField}
                             disabled={isThinking}
                             autoFocus
